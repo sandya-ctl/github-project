@@ -1,1 +1,23 @@
-test
+name: GCS Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: google-github-actions/setup-gcloud@v0
+      with:
+        service_account_email: ${{ secrets.GCP_KEY }}
+        service_account_key: ${{ secrets.GCP_VALUE }}
+        project_id: directed-asset-393210
+
+    - name: Deploy via GCS
+      run: |
+        gsutil -m rm -rf gs://github-actions-gcs2/* || echo "$?"
+        gsutil -m cp -r * gs://github-actions-gcs2/
